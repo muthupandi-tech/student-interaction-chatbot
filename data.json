@@ -1,0 +1,37 @@
+{
+  "Who is the HOD of ECE?": {
+    "aliases": [
+      "ECE hod name",
+      "Who is the head of ECE?",
+      "Head of the department of ECE",
+      "HOD of ECE department",
+      "Who is the head of ECE department?",
+      "Who is the head of ECE?",
+      "Who is the head of ECE department?",
+      "Who is the head of the ECE department?",
+      "Who is the head of ECE?",
+      "Who is the head of the ECE?",
+      "Who is the head of ECE department?",
+      "Who is the head of the ECE department?"
+      
+
+    ],
+    "answer":"Dr.R.Poornachandran,M.E,Phd., is the Head of the Department for 1st & 2nd year, and Dr.Mr.Anand Kumar,M.E,Phd.,  is the Head of the Department for 3rd & Final year ECE at our college."
+
+  },
+  "What labs are available in ECE?": {
+    "aliases": [
+      "List of ECE labs",
+      "ECE lab details",
+      "Name some labs in ECE"
+    ],
+    "answer": "The ECE department includes labs like VLSI Lab, DSP Lab, Communication Lab, and Embedded Systems Lab."
+  },
+  "Who teaches Embedded Systems?": {
+    "aliases": [
+      "Embedded systems faculty",
+      "Teacher of embedded subject"
+    ],
+    "answer": "Mr. Karthik handles the Embedded Systems subject in ECE."
+  }
+}
