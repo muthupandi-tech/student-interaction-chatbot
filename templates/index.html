@@ -1,42 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>ECE Chatbot</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Interaction Chatbot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <h2>ECE Department Chatbot 🤖</h2>
-        <div class="chat-box" id="chat-box">
-            <div class="bot-message">Hi! Ask me any ECE-related question 👇</div>
-        </div>
-        <form id="chat-form">
-            <input type="text" id="user-input" placeholder="Type your question here..." autocomplete="off" required>
-            <button type="submit">Send</button>
-        </form>
+  <div class="main-layout">
+    <!-- 🧭 Sidebar -->
+    <div class="sidebar">
+      <h2>📚 ECE Portal</h2>
+      <button onclick="quickAsk('faculty details')">🧑‍🏫 Faculty</button>
+      <button onclick="quickAsk('lab details')">🔬 Labs</button>
+      <button onclick="quickAsk('department info')">🏛️ Department</button>
+      <button onclick="quickAsk('club events')">🎉 Club Events</button>
+      <button onclick="quickAsk('latest notifications')">📰 Notifications</button>
     </div>
 
-    <script>
-        const form = document.getElementById('chat-form');
-        const input = document.getElementById('user-input');
-        const chatBox = document.getElementById('chat-box');
+    <!-- 💬 Chat Container -->
+    <div class="container">
+      <div class="header">
+  <h2>🎓 Student Interaction Chatbot</h2>
+  <h3>Department of ECE</h3>
+  <p>V.S.B. Engineering College, Karur</p>
+  <p class="tagline">Ask me anything about your department!</p>
+</div>
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const msg = input.value;
-            chatBox.innerHTML += `<div class="user-message">${msg}</div>`;
-            input.value = '';
 
-            const response = await fetch('/get', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `msg=${encodeURIComponent(msg)}`
-            });
-            const data = await response.json();
-            chatBox.innerHTML += `<div class="bot-message">${data.reply}</div>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-    </script>
+      <div class="chatbox" id="chatbox"></div>
+
+      <div class="typing-indicator" id="typingIndicator">💬 Bot is replying...</div>
+
+      <div class="input-area">
+        <input type="text" id="userInput" placeholder="Type your question here..." onkeypress="if(event.key==='Enter'){sendMessage();}">
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ✅ Show dynamic greeting message based on time
+    window.onload = function() {
+      let chatbox = document.getElementById("chatbox");
+      let currentHour = new Date().getHours();
+      let greeting = "";
+
+      if (currentHour < 12) {
+        greeting = "☀️ Good Morning, Student!";
+      } else if (currentHour < 18) {
+        greeting = "🌤️ Good Afternoon, Student!";
+      } else {
+        greeting = "🌙 Good Evening, Student!";
+      }
+
+      chatbox.innerHTML = `<div class='botMsg'>${greeting}<br>I'm your ECE Assistant. How can I help you today?</div>`;
+    };
+
+    const chatbox = document.getElementById("chatbox");
+    const typingIndicator = document.getElementById("typingIndicator");
+
+    function sendMessage() {
+      let userInput = document.getElementById("userInput").value.trim();
+      if (userInput === "") return;
+
+      chatbox.innerHTML += `<div class='userMsg'>${userInput}</div>`;
+      typingIndicator.style.display = "block";
+
+      fetch("/get", {
+        method: "POST",
+        body: new URLSearchParams({ msg: userInput }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      })
+      .then(res => res.json())
+      .then(data => {
+        setTimeout(() => {
+          typingIndicator.style.display = "none";
+          chatbox.innerHTML += `<div class='botMsg'>${data.reply}</div>`;
+          chatbox.scrollTop = chatbox.scrollHeight;
+        }, 1000);
+      })
+      .catch(() => {
+        typingIndicator.style.display = "none";
+        chatbox.innerHTML += `<div class='botMsg error'>⚠️ Server error. Please try again later.</div>`;
+      });
+
+      document.getElementById("userInput").value = "";
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+
+    function quickAsk(question) {
+      document.getElementById("userInput").value = question;
+      sendMessage();
+    }
+  </script>
 </body>
 </html>
