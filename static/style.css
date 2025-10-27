@@ -226,3 +226,29 @@ body {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.table-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.table-box ul {
+  list-style: square;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+.table-box li {
+  padding: 4px 0;
+  font-size: 15px;
+  color: #333;
+  border-bottom: 1px dashed #ccc;
+}
+
+.table-box li:last-child {
+  border-bottom: none;
+}
