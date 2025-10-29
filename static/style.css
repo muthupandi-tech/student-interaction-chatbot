@@ -252,3 +252,44 @@ body {
 .table-box li:last-child {
   border-bottom: none;
 }
+
+.faculty-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.faculty-table th {
+  background: linear-gradient(90deg, #7b2ff7, #f107a3);
+  color: white;
+  text-align: left;
+  padding: 10px;
+}
+
+.faculty-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.faculty-table tr:hover {
+  background: #f9f5ff;
+}
+
+.faculty-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap; /* prevents wrapping */
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 200px;
+}
+
+.faculty-table th {
+  white-space: nowrap;
+}
+
+
