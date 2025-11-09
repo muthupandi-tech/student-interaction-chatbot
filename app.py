@@ -7,6 +7,35 @@ import traceback
 # Do a non-import check so static analyzers don't complain about missing packages.
 import importlib
 
+QA_EXCEL = "chat_data.xlsx"
+
+def load_qa_data(path=QA_EXCEL):
+    """Load question-answer pairs from Excel."""
+    if not os.path.exists(path):
+        print("⚠️ No chat_data.xlsx found.")
+        return []
+
+    df = pd.read_excel(path)
+    df.columns = [str(c).strip().lower() for c in df.columns]
+
+    q_col = next((c for c in df.columns if 'question' in c), None)
+    a_col = next((c for c in df.columns if 'answer' in c), None)
+    alias_col = next((c for c in df.columns if 'alias' in c), None)
+
+    data = []
+    for _, r in df.iterrows():
+        q = str(r.get(q_col, '')).strip()
+        a = str(r.get(a_col, '')).strip()
+        alias = str(r.get(alias_col, '')).strip() if alias_col else ''
+        if q and a:
+            data.append({'question': q.lower(), 'answer': a, 'alias': alias})
+
+    print(f"[INFO] Loaded {len(data)} Q&A pairs from chat_data.xlsx")
+    return data
+
+qa_pairs = load_qa_data()
+
+
 req_spec = importlib.util.find_spec("requests")
 bs4_spec = importlib.util.find_spec("bs4")
 HAS_REQUESTS = bool(req_spec and bs4_spec)
@@ -171,36 +200,31 @@ def home():
 @app.route('/get', methods=['POST'])
 def get_bot_response():
     try:
-        user_input = request.form.get('msg','').strip().lower()
+        user_input = request.form.get('msg', '').strip().lower()
         if not user_input:
             return jsonify({'reply': "Please type a question."})
 
-        # Faculty queries (broad matching)
-        if any(k in user_input for k in ['faculty','staff','teacher','professor','who is','list of faculty','faculty details']):
+        # --- Side button logic ---
+        if any(k in user_input for k in ['faculty', 'staff', 'teacher', 'professor']):
             return jsonify({'reply': faculty_html(faculty_rows)})
 
-
-        # Labs
         if 'lab' in user_input:
-            # you can later load from excel; for now a sample HTML table
             lab_html = """
             <div class='table-box'>
             <table class='faculty-table'>
             <thead><tr><th>Semester</th><th>Lab Name</th><th>Details</th></tr></thead>
             <tbody>
-            <tr><td>2nd Sem</td><td>Electronic Devices & Circuits Lab</td><td>Practical on diodes, BJT, FET amplifiers.</td></tr>
-            <tr><td>2nd Sem</td><td>Digital Electronics Lab</td><td>Combinational & sequential logic experiments.</td></tr>
+            <tr><td>2nd Sem</td><td>Electronic Devices & Circuits Lab</td><td>Experiments on diodes, BJT, FET amplifiers.</td></tr>
+            <tr><td>2nd Sem</td><td>Digital Electronics Lab</td><td>Logic design, sequential and combinational circuits.</td></tr>
             <tr><td>2nd Sem</td><td>Simulation Lab</td><td>MATLAB & Multisim based experiments.</td></tr>
             </tbody></table></div>
             """
             return jsonify({'reply': lab_html})
 
-        # Department
         if 'department' in user_input or 'ece' in user_input:
             return jsonify({'reply': '<a href="https://vsbec.edu.in/ece/" target="_blank">Visit ECE Department - VSBEC</a>'})
 
-        # Club / event
-        if any(k in user_input for k in ['club','event','events','competition','line follower']):
+        if any(k in user_input for k in ['club', 'event', 'competition', 'line follower']):
             club_html = """
             <div style="text-align:center;">
               <img src="/static/club_event.jpg" alt="ECE Club Event" style="width:70%; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.3); margin:10px 0;">
@@ -211,15 +235,21 @@ def get_bot_response():
             """
             return jsonify({'reply': club_html})
 
-        # Notifications
-        if 'notification' in user_input or 'notifications' in user_input or 'news' in user_input:
+        if 'notification' in user_input or 'news' in user_input:
             return jsonify({'reply': "<p>📢 No new notifications found.</p>"})
 
-        # Fallback: try to match exact question keys in a small KB (if you have one)
-        return jsonify({'reply': "Sorry, I couldn't find that. Try: 'faculty', 'labs', 'department', 'club events', or 'notifications'."})
+        # --- Q&A logic (from chat_data.xlsx) ---
+        for item in qa_pairs:
+            if user_input in item['question'] or (item['alias'] and user_input in item['alias'].lower()):
+                return jsonify({'reply': item['answer']})
+
+        # Fallback
+        return jsonify({'reply': "Sorry, I couldn’t find that. Try asking about 'faculty', 'labs', 'department', 'club events', or 'notifications'."})
+
     except Exception:
         traceback.print_exc()
         return jsonify({'reply': "An internal error occurred. Check server logs."})
+
 
 if __name__ == '__main__':
     app.run(debug=True)

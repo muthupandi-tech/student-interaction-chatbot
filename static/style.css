@@ -13,12 +13,13 @@ body {
 .main-layout {
   display: flex;
   width: 900px;
-  height: 600px;
+  max-height: 90vh; /* adapts to screen height */
   background: white;
   border-radius: 20px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
+
 
 /* Sidebar */
 .sidebar {
@@ -56,10 +57,12 @@ body {
 
 /* Chat Area */
 .container {
-  flex-grow: 1;
+  flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
+
 
 /* Header */
 .header {
@@ -94,12 +97,15 @@ body {
 
 /* Chatbox */
 .chatbox {
-  flex-grow: 1;
+  flex: 1;
   padding: 15px;
   overflow-y: auto;
   background-color: #f9fafb;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  scroll-behavior: smooth;
+  height: 100%;
 }
 
 .userMsg, .botMsg {
@@ -176,11 +182,11 @@ body {
 
 /* Scrollbar */
 .chatbox::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 .chatbox::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 /* Animation */
@@ -290,6 +296,28 @@ body {
 
 .faculty-table th {
   white-space: nowrap;
+}
+
+/* Ensure chat container fits within layout */
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Chat message scroll fix */
+.chatbox::-webkit-scrollbar {
+  width: 8px;
+}
+.chatbox::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+/* Optional smooth scroll effect */
+html {
+  scroll-behavior: smooth;
 }
 
 
